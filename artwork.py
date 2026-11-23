@@ -6,6 +6,7 @@ Only Pillow and the DejaVu fonts in ``/usr/share/fonts/truetype/dejavu/`` are us
 
 from __future__ import annotations
 
+import math
 from functools import cache
 from typing import TypedDict
 
@@ -56,35 +57,35 @@ STORIES: list[Story] = [
     {
         "tag": "UKRAINE / THE GUARDIAN",
         "title": ("Kyiv region strikes", "killed at least 14"),
-        "fact": "At least 14 killed in strikes on Kyiv region",
+        "fact": "Dymer block hit; NATO meets on Poland",
         "icon": "building",
         "color": "#a8322c",
     },
     {
         "tag": "LIBYA / ARAB NEWS",
         "title": ("Russian corvette", "sunk off Libya"),
-        "fact": "Seven naval drones sank corvette Merkury",
+        "fact": "Zelensky: seven drones; UN urges inquiry",
         "icon": "ship",
         "color": "#23507f",
     },
     {
         "tag": "VANUATU / USGS",
         "title": ("Magnitude 6.5", "under Vanuatu"),
-        "fact": "Magnitude 6.5 at 598 km deep; alert green",
+        "fact": "02:40 UTC, 598 km deep; green alert",
         "icon": "quake",
         "color": "#1b1d22",
     },
     {
         "tag": "ASIA / AL JAZEERA",
         "title": ("Asian markets", "open sharply lower"),
-        "fact": "Kospi down 3.2%; Hang Seng 0.6% lower",
+        "fact": "Kospi down 5.8%; S&P 500 in correction",
         "icon": "chart",
         "color": "#2f6b4f",
     },
     {
         "tag": "GAZA / THE GUARDIAN",
         "title": ("Gaza water and", "soil contaminated"),
-        "fact": "61m tonnes of debris; water and soil toxic",
+        "fact": "61m tonnes of debris; sewage and asbestos",
         "icon": "drop",
         "color": "#65662e",
     },
@@ -224,18 +225,23 @@ def icon_ship(draw: ImageDraw.ImageDraw, x: float, y: float, s: float, colour: s
 
 
 def icon_quake(draw: ImageDraw.ImageDraw, x: float, y: float, s: float, colour: str) -> None:
-    """Concentric seismic rings over a small island."""
-    cx, cy = x + 0.50 * s, y + 0.86 * s
-    draw.chord([x + 0.30 * s, y + 0.78 * s, x + 0.70 * s, y + 0.98 * s], 200, 340, fill=colour)
-    for r in (0.20, 0.34, 0.48):
-        draw.arc(
-            [cx - r * s, cy - r * s, cx + r * s, cy + r * s],
-            205,
-            335,
-            fill=colour,
-            width=3,
-        )
-    draw.line([x + 0.50 * s, y + 0.70 * s, x + 0.50 * s, y + 0.80 * s], fill=colour, width=3)
+    """A seismograph trace that jumps into a sharp zigzag and settles again."""
+    trace = [
+        (0.02, 0.55),
+        (0.26, 0.55),
+        (0.34, 0.12),
+        (0.42, 0.94),
+        (0.50, 0.26),
+        (0.58, 0.72),
+        (0.64, 0.55),
+        (0.98, 0.55),
+    ]
+    draw.line(
+        [(x + px * s, y + py * s) for px, py in trace],
+        fill=colour,
+        width=2,
+        joint="curve",
+    )
 
 
 def icon_chart(draw: ImageDraw.ImageDraw, x: float, y: float, s: float, colour: str) -> None:
@@ -255,33 +261,38 @@ def icon_chart(draw: ImageDraw.ImageDraw, x: float, y: float, s: float, colour: 
 
 
 def icon_drop(draw: ImageDraw.ImageDraw, x: float, y: float, s: float, colour: str) -> None:
-    """A cracked water drop over rubble."""
-    draw.ellipse([x + 0.30 * s, y + 0.36 * s, x + 0.70 * s, y + 0.76 * s], outline=colour, width=3)
-    draw.polygon(
-        [(x + 0.50 * s, y + 0.08 * s), (x + 0.34 * s, y + 0.46 * s), (x + 0.66 * s, y + 0.46 * s)],
-        outline=colour,
-        width=3,
+    """A solid water drop with a jagged crack cut through it, on a broken slab."""
+    cx, cy, r = x + 0.50 * s, y + 0.44 * s, 0.24 * s
+    apex = (x + 0.50 * s, y + 0.05 * s)
+    spread = math.degrees(math.acos(r / (cy - apex[1])))
+    right = (
+        cx + r * math.cos(math.radians(-90 + spread)),
+        cy + r * math.sin(math.radians(-90 + spread)),
     )
+    left = (2 * cx - right[0], right[1])
+    draw.ellipse([cx - r, cy - r, cx + r, cy + r], fill=colour)
+    draw.polygon([apex, right, left], fill=colour)
     draw.line(
         [
-            x + 0.62 * s,
-            y + 0.20 * s,
-            x + 0.46 * s,
-            y + 0.44 * s,
-            x + 0.58 * s,
-            y + 0.54 * s,
-            x + 0.42 * s,
-            y + 0.72 * s,
+            (x + 0.520 * s, y + 0.24 * s),
+            (x + 0.455 * s, y + 0.36 * s),
+            (x + 0.530 * s, y + 0.44 * s),
+            (x + 0.450 * s, y + 0.57 * s),
+        ],
+        fill=CARD_FILL,
+        width=2,
+        joint="curve",
+    )
+    draw.polygon(
+        [
+            (x + 0.04 * s, y + 0.80 * s),
+            (x + 0.46 * s, y + 0.74 * s),
+            (x + 0.96 * s, y + 0.82 * s),
+            (x + 0.94 * s, y + 0.92 * s),
+            (x + 0.06 * s, y + 0.92 * s),
         ],
         fill=colour,
-        width=2,
     )
-    for bx, bw, by in ((0.10, 0.16, 0.84), (0.34, 0.13, 0.90), (0.58, 0.18, 0.83), (0.80, 0.12, 0.91)):
-        draw.rectangle(
-            [x + bx * s, y + by * s, x + (bx + bw) * s, y + min(0.98, by + 0.10) * s],
-            outline=colour,
-            width=2,
-        )
 
 
 def icon_lights(draw: ImageDraw.ImageDraw, x: float, y: float, s: float, colour: str) -> None:

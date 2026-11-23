@@ -46,7 +46,7 @@ gradients, and the page is built to stay legible at 300 pixels across.
    million LEDs along the avenue, and the avenue's Christmas market returned after 10 years away
    with 200 exhibitors in wooden chalets between the Rond-Point and the Place de la Concorde.
    Cate Blanchett was the patron of the 2026 event.
-   Source: [Euronews](https://fr.euronews.com/2026/11/23/les-champs-elysees-silluminent-pour-les-fetes-et-retrouvent-leur-marche-de-noel), 23 November 2026, 08:22 CET.
+   Source: [Euronews](https://www.euronews.com/2026/11/23/champs-elysees-launch-christmas-lights-season-and-revive-paris-christmas-market), 23 November 2026, 8:24 CET.
 
 ## Run
 
